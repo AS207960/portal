@@ -1,0 +1,85 @@
+{% extends "portal/base.html" %}
+{% block content %}
+    <div class="container my-3">
+        <h1 class="display-4">Hello, {{ user.first_name }}!</h1>
+        <h2>Your apps</h2>
+        <div class="card-deck mt-3 mb-sm-4">
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Domains</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Manage, register, and transfer your domain names.
+                    </p>
+                    <a href="https://domains.glauca.digital" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">HexDNS</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Manage DNS for your domains, registered with us or otherwise.
+                    </p>
+                    <a href="https://dns.glauca.digital" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Billing</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Keep an eye on your subscriptions and decide how you'll pay us.
+                    </p>
+                    <a href="https://billing.as207960.net" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck my-0 my-sm-4">
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Account management</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Manage your SSO account.
+                    </p>
+                    <a href="https://sso.as207960.net/auth/realms/master/account" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">OAuth Apps</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Manage OAuth apps registered for use with out APIs.
+                    </p>
+                    <a href="https://oauth.as207960.net" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Docs</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Documentation on how to use our services, and any available APIs.
+                    </p>
+                    <a href="https://docs.glauca.digital" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck my-0 my-sm-4">
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">WHOIS</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        Boring searchy thing we have to provide.
+                    </p>
+                    <a href="https://web-whois.as207960.net" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Never IPv4</h5>
+                    <p class="card-text" style="flex-grow: 1;">
+                        A service to check if you have a functioning IPv6 connection.
+                    </p>
+                    <a href="https://neveripv4.com" class="btn btn-primary btn-block">Open</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

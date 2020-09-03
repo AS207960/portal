@@ -1,0 +1,109 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: portal-django-static
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: portal-django-conf
+data:
+  HOST: "portal.glauca.digital,portal-nginx"
+  DJANGO_SETTINGS_MODULE: as207960_portal.settings
+  EXTERNAL_URL: "https://portal.glauca.digital"
+  SENTRY_ENVIRONMENT: "prod"
+  KEYCLOAK_SERVER_URL: "https://sso.as207960.net/"
+  KEYCLOAK_REALM: master
+  KEYCLOAK_SCOPES: "openid email profile"
+  KEYCLOAK_CLIENT_ID: "portal"
+  DB_HOST: "cockroachdb"
+  DB_NAME: "portal"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-django
+  labels:
+    app: portal
+    part: django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portal
+      part: django
+  template:
+    metadata:
+      annotations:
+        cni.projectcalico.org/ipv6pools: "[\"default-ipv6-ippool\"]"
+      labels:
+        app: portal
+        part: django
+    spec:
+      volumes:
+        - name: static
+          persistentVolumeClaim:
+            claimName: portal-django-static
+      initContainers:
+        - name: django
+          image: as207960/portal:(version)
+          imagePullPolicy: Always
+          command: ["sh", "-c", "python3 manage.py collectstatic --noinput && python3 manage.py migrate && python3 manage.py sync-keycloak"]
+          volumeMounts:
+            - mountPath: "/app/static/"
+              name: static
+          envFrom:
+            - configMapRef:
+                name: portal-django-conf
+            - secretRef:
+                name: portal-db-creds
+              prefix: "DB_"
+            - secretRef:
+                name: portal-django-secret
+            - secretRef:
+                name: portal-keycloak
+              prefix: "KEYCLOAK_"
+      containers:
+        - name: gunicorn
+          image: as207960/portal:(version)
+          imagePullPolicy: Always
+          command: ["gunicorn", "-w", "8", "-b", "[::]:8000", "--forwarded-allow-ips", "*", "--access-logfile", "-", "--log-level=debug", "--timeout=90", "as207960_portal.wsgi:application"]
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - mountPath: "/app/static/"
+              name: static
+          envFrom:
+            - configMapRef:
+              name: portal-django-conf
+            - secretRef:
+                name: portal-db-creds
+              prefix: "DB_"
+            - secretRef:
+                name: portal-django-secret
+            - secretRef:
+                name: portal-keycloak
+              prefix: "KEYCLOAK_"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-django
+  labels:
+    app: portal
+    part: django
+spec:
+  selector:
+    app: portal
+    part: django
+  ports:
+    - port: 8000
+      targetPort: 8000
+

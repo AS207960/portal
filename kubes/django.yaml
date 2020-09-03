@@ -82,7 +82,7 @@ spec:
               name: static
           envFrom:
             - configMapRef:
-              name: portal-django-conf
+                name: portal-django-conf
             - secretRef:
                 name: portal-db-creds
               prefix: "DB_"

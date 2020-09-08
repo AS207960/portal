@@ -3,7 +3,8 @@
     <div class="container my-3">
         <h1 class="display-4">Hello, {{ user.first_name }}!</h1>
         <h2>Your apps</h2>
-        <div class="card-deck mt-3 mb-sm-4">
+        <div class="card-deck mt-3 mb-sm-4 shark-container">
+            <img src="https://as207960.net/assets/img/shark-curl.svg" alt="" class="shark-curl">
             <div class="card text-center">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Domains</h5>
@@ -82,4 +83,24 @@
             </div>
         </div>
     </div>
+    <style>
+        .shark-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .shark-curl {
+            width: 200px;
+            position: absolute;
+            left: -10px;
+            bottom: -45px;
+        }
+
+        @media (min-width: 576px) {
+            .shark-curl {
+                left: -70px;
+                bottom: -40px;
+            }
+        }
+    </style>
 {% endblock %}

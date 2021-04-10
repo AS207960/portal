@@ -1,5 +1,5 @@
 Django
-git+https://github.com/TheEnbyperor/django-keycloak-auth@4d441c9749c057687d5a33dc4972a1421a570f9a
+git+https://github.com/TheEnbyperor/django-keycloak-auth@c6f28294ca9101136c81473b63859351ed4d190a
 sentry-sdk
 psycopg2-binary
 gunicorn

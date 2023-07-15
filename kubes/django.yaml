@@ -1,21 +1,9 @@
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: portal-django-static
-spec:
-  storageClassName: standard
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
----
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: portal-django-conf
 data:
-  HOST: "portal.glauca.digital,portal-nginx"
+  HOST: "portal.glauca.digital"
   DJANGO_SETTINGS_MODULE: as207960_portal.settings
   EXTERNAL_URL: "https://portal.glauca.digital"
   SENTRY_ENVIRONMENT: "prod"
@@ -25,6 +13,13 @@ data:
   KEYCLOAK_CLIENT_ID: "portal"
   DB_HOST: "cockroachdb"
   DB_NAME: "portal"
+  S3_ENDPOINT: "https://s3.as207960.net"
+  S3_REGION: "garage"
+  S3_BUCKET: "portal-django"
+  S3_ACCESS_KEY_ID: "GKb0d16952d5214be2f12b5975"
+  S3_CUSTOM_DOMAIN: "portal-django.content.as207960.net"
+  STATIC_URL: "https://portal-django.content.as207960.net/"
+  MEDIA_URL: "https://portal-django.content.as207960.net/"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,18 +42,11 @@ spec:
         app: portal
         part: django
     spec:
-      volumes:
-        - name: static
-          persistentVolumeClaim:
-            claimName: portal-django-static
       initContainers:
         - name: django
           image: as207960/portal:(version)
           imagePullPolicy: Always
           command: ["sh", "-c", "python3 manage.py collectstatic --noinput && python3 manage.py migrate && python3 manage.py sync-keycloak"]
-          volumeMounts:
-            - mountPath: "/app/static/"
-              name: static
           envFrom:
             - configMapRef:
                 name: portal-django-conf
@@ -70,6 +58,8 @@ spec:
             - secretRef:
                 name: portal-keycloak
               prefix: "KEYCLOAK_"
+            - secretRef:
+                name: portal-s3
       containers:
         - name: gunicorn
           image: as207960/portal:(version)
@@ -106,4 +96,50 @@ spec:
   ports:
     - port: 8000
       targetPort: 8000
-
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: portal-django
+spec:
+  podSelector:
+    matchLabels:
+      app: portal
+      part: django
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portal-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "gts"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  tls:
+    - hosts:
+        - portal.glauca.digital
+      secretName: portal-tls
+  rules:
+    - host: portal.glauca.digital
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portal-django
+                port:
+                  number: 8000

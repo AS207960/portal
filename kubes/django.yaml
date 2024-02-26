@@ -127,6 +127,7 @@ metadata:
     cert-manager.io/cluster-issuer: "gts"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - portal.glauca.digital

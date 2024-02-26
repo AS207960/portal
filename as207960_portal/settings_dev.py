@@ -148,3 +148,5 @@ KEYCLOAK_REALM = keycloak_conf["realm"]
 OIDC_CLIENT_ID = keycloak_conf["client_id"]
 OIDC_CLIENT_SECRET = keycloak_conf["client_secret"]
 OIDC_SCOPES = keycloak_conf["scopes"]
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

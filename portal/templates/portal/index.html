@@ -2,6 +2,22 @@
 {% block content %}
     <div class="container my-3">
         <h1 class="display-4">Hello, {{ user.first_name }}!</h1>
+        {% if prompt_passkeys %}
+            <div class="card text-center my-3 mx-auto" style="max-width: 600px;">
+                <div class="card-body">
+                    <h4 class="card-title">Setup a Passkey on your account</h4>
+                    <p class="card-text lead">
+                        Glauca now supports Passkeys to login to our services.
+                        Passkeys are a secure way to login without needing to remember a password.
+                    </p>
+                    <a href="{% url 'oidc_login' %}?kc_action=webauthn-register-passwordless" class="btn btn-primary btn-lg mb-2">
+                        Setup your Passkey
+                    </a>
+                    <br/>
+                    <a href="https://docs.glauca.digital/passkeys/" class="card-link" target="_blank">Learn more about Passkeys</a>
+                </div>
+            </div>
+        {% endif %}
         <h2>Your apps</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 mt-3 mb-sm-4 justify-content-center shark-container">
             <img src="https://as207960.net/assets/img/shark-curl.svg" alt="" class="shark-curl">

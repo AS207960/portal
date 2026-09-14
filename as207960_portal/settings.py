@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from sentry_sdk.integrations.django import DjangoIntegration
 import logging
+import botocore.config
 
 
 logging.basicConfig(level=logging.INFO)

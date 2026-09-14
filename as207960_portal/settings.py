@@ -145,6 +145,7 @@ MEDIA_URL = os.getenv("MEDIA_URL", f"{EXTERNAL_URL_BASE}/media/")
 
 AWS_S3_CUSTOM_DOMAIN = os.getenv("S3_CUSTOM_DOMAIN", "")
 AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
 AWS_S3_REGION_NAME = os.getenv("S3_REGION", "")
 AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT", "")
 AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET", "")
@@ -154,8 +155,24 @@ AWS_S3_ADDRESSING_STYLE = "virtual"
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 STORAGES = {
-    "default": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
-    "staticfiles": {"BACKEND": "storages.backends.s3boto3.S3ManifestStaticStorage"}
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "client_config": botocore.config.Config(
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+            )
+        }
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3ManifestStaticStorage",
+        "OPTIONS": {
+            "client_config": botocore.config.Config(
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+            )
+        }
+    },
 }
 
 KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL")
